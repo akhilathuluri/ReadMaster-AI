@@ -3,81 +3,113 @@ import { Settings as SettingsIcon, X, Eye, EyeOff } from 'lucide-react';
 import { useSettingsStore } from '../store/settingsStore';
 
 export const Settings: FC = () => {
-  const { apiKey, setApiKey, isSettingsOpen, toggleSettings } = useSettingsStore();
-  const [showApiKey, setShowApiKey] = useState(false);
-  const [tempApiKey, setTempApiKey] = useState(apiKey);
+  const [isOpen, setIsOpen] = useState(false);
+  const [apiKey, setApiKey] = useState('');
+  const [showWelcome, setShowWelcome] = useState(false);
+
+  useEffect(() => {
+    // Load existing settings
+    const settings = JSON.parse(localStorage.getItem('readmaster-settings') || '{}');
+    setApiKey(settings.state?.apiKey || '');
+
+    // Listen for settings trigger
+    const handleOpenSettings = (event: CustomEvent) => {
+      setIsOpen(true);
+      if (event.detail?.isFirstVisit) {
+        setShowWelcome(true);
+      }
+    };
+
+    window.addEventListener('open-settings' as any, handleOpenSettings);
+    return () => window.removeEventListener('open-settings' as any, handleOpenSettings);
+  }, []);
 
   const handleSave = () => {
-    setApiKey(tempApiKey);
-    toggleSettings();
+    const settings = {
+      state: {
+        apiKey,
+        isSettingsOpen: false
+      },
+      version: 0
+    };
+    localStorage.setItem('readmaster-settings', JSON.stringify(settings));
+    setIsOpen(false);
+    setShowWelcome(false);
   };
 
-  if (!isSettingsOpen) {
-    return (
+  return (
+    <div className="relative">
       <button
-        onClick={toggleSettings}
-        className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors text-gray-700 dark:text-gray-300"
+        onClick={() => setIsOpen(true)}
+        className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700"
         title="Settings"
       >
         <SettingsIcon size={20} />
       </button>
-    );
-  }
 
-  return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white dark:bg-gray-800 rounded-lg p-6 w-96 shadow-xl">
-        <div className="flex justify-between items-center mb-4">
-          <h2 className="text-xl font-semibold dark:text-white">Settings</h2>
-          <button
-            onClick={toggleSettings}
-            className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"
-          >
-            <X size={20} />
-          </button>
-        </div>
-
-        <div className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-              Google Gemini API Key
-            </label>
-            <div className="relative">
-              <input
-                type={showApiKey ? 'text' : 'password'}
-                value={tempApiKey}
-                onChange={(e) => setTempApiKey(e.target.value)}
-                placeholder="Enter your API key"
-                className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-              />
+      {isOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-50">
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-md">
+            <div className="flex items-center justify-between p-4 border-b dark:border-gray-700">
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+                {showWelcome ? 'Welcome to ReadMaster AI! 🎉' : 'Settings'}
+              </h3>
               <button
-                onClick={() => setShowApiKey(!showApiKey)}
-                className="absolute right-2 top-1/2 -translate-y-1/2 p-1 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+                onClick={() => {
+                  setIsOpen(false);
+                  setShowWelcome(false);
+                }}
+                className="p-1 hover:bg-gray-100 dark:hover:bg-gray-700 rounded"
               >
-                {showApiKey ? <EyeOff size={16} /> : <Eye size={16} />}
+                <X size={20} />
               </button>
             </div>
-            <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-              Get your API key from the Google AI Studio
-            </p>
-          </div>
 
-          <div className="flex justify-end gap-2">
-            <button
-              onClick={toggleSettings}
-              className="px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600"
-            >
-              Cancel
-            </button>
-            <button
-              onClick={handleSave}
-              className="px-4 py-2 text-white bg-blue-500 rounded-lg hover:bg-blue-600"
-            >
-              Save
-            </button>
+            <div className="p-4">
+              {showWelcome && (
+                <div className="mb-4 p-4 bg-blue-50 dark:bg-blue-900/30 rounded-lg">
+                  <p className="text-blue-600 dark:text-blue-400 mb-2">
+                    To get started with AI features, please configure your Gemini API key.
+                  </p>
+                  <p className="text-sm text-blue-500 dark:text-blue-300">
+                    You can get your API key from the{' '}
+                    <a
+                      href="https://makersuite.google.com/app/apikey"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="underline hover:text-blue-700 dark:hover:text-blue-200"
+                    >
+                      Google AI Studio
+                    </a>
+                  </p>
+                </div>
+              )}
+
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                    Gemini API Key
+                  </label>
+                  <input
+                    type="password"
+                    value={apiKey}
+                    onChange={(e) => setApiKey(e.target.value)}
+                    placeholder="Enter your API key"
+                    className="w-full px-3 py-2 border rounded-lg dark:border-gray-600 dark:bg-gray-700 focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+
+                <button
+                  onClick={handleSave}
+                  className="w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                >
+                  {showWelcome ? 'Get Started' : 'Save Settings'}
+                </button>
+              </div>
+            </div>
           </div>
         </div>
-      </div>
+      )}
     </div>
   );
 };
