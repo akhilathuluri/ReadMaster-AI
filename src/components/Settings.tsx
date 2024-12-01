@@ -1,6 +1,6 @@
-import { FC, useState } from 'react';
-import { Settings as SettingsIcon, X, Eye, EyeOff } from 'lucide-react';
-import { useSettingsStore } from '../store/settingsStore';
+import { FC, useState, useEffect } from 'react';
+import { Settings as SettingsIcon, X } from 'lucide-react';
+import { useEditorStore } from '../store/editorStore';
 
 export const Settings: FC = () => {
   const [isOpen, setIsOpen] = useState(false);
