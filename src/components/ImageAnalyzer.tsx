@@ -30,7 +30,7 @@ export const ImageAnalyzer: FC = () => {
       }
 
       const genAI = new GoogleGenerativeAI(apiKey);
-      const model = genAI.getGenerativeModel({ model: "gemini-pro-vision" });
+      const model = genAI.getGenerativeModel({ model: "gemini-1.5-pro" });
 
       const imageBase64 = imageData.split(',')[1];
       
