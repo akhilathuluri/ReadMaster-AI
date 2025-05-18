@@ -14,7 +14,7 @@ export async function getContentSuggestions(content: string): Promise<AIResponse
 
   try {
     const genAI = new GoogleGenerativeAI(apiKey);
-    const model = genAI.getGenerativeModel({ model: 'gemini-pro' });
+    const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
     const prompt = `Analyze this markdown content and suggest improvements for clarity and style:\n\n${content}`;
     const result = await model.generateContent(prompt);
     const response = await result.response;
@@ -36,7 +36,7 @@ export async function analyzeSEO(content: string): Promise<AIResponse> {
 
   try {
     const genAI = new GoogleGenerativeAI(apiKey);
-    const model = genAI.getGenerativeModel({ model: 'gemini-pro' });
+    const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
     const prompt = `Analyze this content for SEO optimization and provide recommendations:\n\n${content}`;
     const result = await model.generateContent(prompt);
     const response = await result.response;
@@ -58,7 +58,7 @@ export async function analyzeReadability(content: string): Promise<AIResponse> {
 
   try {
     const genAI = new GoogleGenerativeAI(apiKey);
-    const model = genAI.getGenerativeModel({ model: 'gemini-pro' });
+    const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
     const prompt = `Analyze this text and provide a detailed readability report. Format your response exactly as follows:
 
     Section 1: Readability Scores
@@ -105,7 +105,7 @@ export async function generateHeadlines(content: string): Promise<AIResponse> {
 
   try {
     const genAI = new GoogleGenerativeAI(apiKey);
-    const model = genAI.getGenerativeModel({ model: 'gemini-pro' });
+    const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
     const prompt = `As a professional headline writer, analyze this content and generate 5 different headline options. 
     For each headline, provide:
     1. A catchy, attention-grabbing version
@@ -148,7 +148,7 @@ export async function getMarkdownHelp(query: string): Promise<AIResponse> {
 
   try {
     const genAI = new GoogleGenerativeAI(apiKey);
-    const model = genAI.getGenerativeModel({ model: 'gemini-pro' });
+    const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
     const prompt = `As a Markdown expert, please answer this question about Markdown:
 
     Question: ${query}
