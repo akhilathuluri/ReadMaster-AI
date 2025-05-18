@@ -18,7 +18,7 @@ function getGeminiModel() {
     throw new Error('Gemini API key not found in settings');
   }
   const genAI = new GoogleGenerativeAI(apiKey);
-  return genAI.getGenerativeModel({ model: 'gemini-pro' });
+  return genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
 }
 
 export type SuggestionType = 'structure' | 'heading' | 'section' | 'content' | 'style' | 'clarity';
